@@ -65,6 +65,32 @@ CREATE TABLE if not exists exercises(
     muscles VARCHAR(25) NOT NULL -- Músculos que são treinados nesse exercício separados por vírgulas
 );
 
+/* Essa tabela é estática. Os usuários não poderão alterá-la.*/
+CREATE TABLE IF NOT EXISTS muscles(
+	id_muscle INT AUTO_INCREMENT PRIMARY KEY,
+    name_muscle ENUM(        
+		'chest',
+        'back',
+        'shoulders',
+        'biceps',
+        'triceps',
+        'forearms',
+        'abs',
+        'glutes',
+        'quadriceps',
+        'hamstrings',
+        'calves',
+        'adductors',
+        'traps',
+        'lats') /*Este ENUM serve apenas para deixar mais claro ainda os músculos "existentes"*/
+);
+
+CREATE TABLE IF NOT EXISTS exercises_muscles(
+	id_exercise_muscle INT AUTO_INCREMENT PRIMARY KEY,
+    exercise_id INT NOT NULL,
+	muscle_id INT NOT NULL
+);
+
 CREATE TABLE if not exists exercises_logs(
 	id_exercise_log INT AUTO_INCREMENT PRIMARY KEY,
     weight DOUBLE,
@@ -99,6 +125,7 @@ CREATE TABLE if not exists players(
 	id_player INT AUTO_INCREMENT PRIMARY KEY,
     height DOUBLE,
     weight DOUBLE,
+    is_premium BOOL,
     user_id INT NOT NULL,
 	personal_trainer_id INT,
     nutritionist_id INT
@@ -121,6 +148,16 @@ CREATE TABLE IF NOT EXISTS friendships (
     CONSTRAINT chk_no_self_friend CHECK (player_id <> friend_id)
 );
 
+CREATE TABLE IF NOT EXISTS `groups` (
+	id_group INT AUTO_INCREMENT PRIMARY KEY,
+    name_group VARCHAR(25) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS players_groups (
+	id_player_groups INT AUTO_INCREMENT PRIMARY KEY,
+    player_id INT NOT NULL,
+    group_id INT NOT NULL
+);
 
 /* Tabela para reduzir a redundãncia dos dados e associar as tabelas treinos e exercicios*/
 CREATE TABLE if not exists exercises_workouts(
@@ -140,6 +177,43 @@ CREATE TABLE if not exists workouts(
     player_id INT NOT NULL,
     personal_trainer_id INT
 );
+
+CREATE TABLE IF NOT EXISTS cardios(
+	id_cardio INT AUTO_INCREMENT PRIMARY KEY,
+    name_cardio ENUM('running', 'walking', 'bike', 'elliptical','stair_climber')
+);
+
+CREATE TABLE IF NOT EXISTS cardios_workouts(
+	id_cardio_workout INT AUTO_INCREMENT PRIMARY KEY,
+    cardio_id INT NOT NULL,
+    workout_id INT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS cardios_logs(
+	id_cardio_log INT AUTO_INCREMENT PRIMARY KEY,
+    time_cardio TIME,
+    velocity FLOAT,
+    incline FLOAT,
+    cardio_id INT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS workouts_logs(
+	id_workout_log INT AUTO_INCREMENT PRIMARY KEY,
+    time_workout TIME, 
+    workout_id INT NOT NULL
+);
+
+ALTER TABLE players_groups
+ADD CONSTRAINT fk_player_group
+FOREIGN KEY (player_id) REFERENCES players(id_player)
+ON DELETE CASCADE
+ON UPDATE CASCADE;
+
+ALTER TABLE players_groups
+ADD CONSTRAINT fk_group_player
+FOREIGN KEY (group_id) REFERENCES `groups`(id_group)
+ON DELETE CASCADE
+ON UPDATE CASCADE;
 
 ALTER TABLE diet_plans
 ADD CONSTRAINT fk_player_diet_plan
@@ -189,6 +263,24 @@ FOREIGN KEY (player_id) REFERENCES players(id_player)
 ON DELETE CASCADE
 ON UPDATE CASCADE;
 
+ALTER TABLE cardios_logs
+ADD CONSTRAINT fk_cardio_cardio_log
+FOREIGN KEY (cardio_id) REFERENCES cardios(id_cardio)
+ON DELETE CASCADE
+ON UPDATE CASCADE;
+
+ALTER TABLE cardios_workouts
+ADD CONSTRAINT fk_cardio_workout
+FOREIGN KEY (cardio_id) REFERENCES cardios(id_cardio)
+ON DELETE CASCADE
+ON UPDATE CASCADE;
+
+ALTER TABLE cardios_workouts
+ADD CONSTRAINT fk_workout_cardio
+FOREIGN KEY (workout_id) REFERENCES workouts(id_workout)
+ON DELETE CASCADE
+ON UPDATE CASCADE;
+
 ALTER TABLE exercises_logs
 ADD CONSTRAINT fk_exercise_exercise_log
 FOREIGN KEY (exercise_id) REFERENCES exercises(id_exercise)
@@ -201,14 +293,27 @@ FOREIGN KEY (player_id) REFERENCES players(id_player)
 ON DELETE CASCADE
 ON UPDATE CASCADE;
 
+ALTER TABLE exercises_muscles
+ADD CONSTRAINT fk_exercise_muscle
+FOREIGN KEY (exercise_id) REFERENCES exercises(id_exercise)
+ON DELETE CASCADE
+ON UPDATE CASCADE;
+
+ALTER TABLE exercises_muscles
+ADD CONSTRAINT fk_muscle_exercise
+FOREIGN KEY (muscle_id) REFERENCES muscles(id_muscle)
+ON DELETE CASCADE
+ON UPDATE CASCADE;
+
+
 ALTER TABLE exercises_workouts
-ADD CONSTRAINT fk_exercise
+ADD CONSTRAINT fk_exercise_workout
 FOREIGN KEY (exercise_id) REFERENCES exercises(id_exercise)
 ON DELETE CASCADE
 ON UPDATE CASCADE;
 
 ALTER TABLE exercises_workouts
-ADD CONSTRAINT fk_workout
+ADD CONSTRAINT fk_workout_exercise
 FOREIGN KEY (workout_id) REFERENCES workouts(id_workout)
 ON DELETE CASCADE
 ON UPDATE CASCADE;
@@ -260,3 +365,10 @@ ADD CONSTRAINT fk_personal_trainer_workout
 FOREIGN KEY (personal_trainer_id) REFERENCES personal_trainers(id_personal_trainer)
 ON DELETE CASCADE
 ON UPDATE CASCADE;
+
+ALTER TABLE workouts_logs
+ADD CONSTRAINT fk_workout_workout_log
+FOREIGN KEY (workout_id) REFERENCES workouts(id_workout)
+ON DELETE CASCADE
+ON UPDATE CASCADE;
+ 
