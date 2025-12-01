@@ -52,12 +52,6 @@ CREATE TABLE if not exists meals(
 CREATE TABLE if not exists exercises(
 	id_exercise INT AUTO_INCREMENT PRIMARY KEY,
     name_exercise VARCHAR(25) NOT NULL,
-    muscles VARCHAR(25) NOT NULL -- Músculos que são treinados nesse exercício separados por vírgulas
-);
-
-/* Essa tabela é estática. Os usuários não poderão alterá-la.*/
-CREATE TABLE IF NOT EXISTS muscles(
-	id_muscle INT AUTO_INCREMENT PRIMARY KEY,
     name_muscle ENUM(        
 		'chest',
         'back',
@@ -72,13 +66,7 @@ CREATE TABLE IF NOT EXISTS muscles(
         'calves',
         'adductors',
         'traps',
-        'lats') /*Este ENUM serve apenas para deixar mais claro ainda os músculos "existentes"*/
-);
-
-CREATE TABLE IF NOT EXISTS exercises_muscles(
-	id_exercise_muscle INT AUTO_INCREMENT PRIMARY KEY,
-    exercise_id INT NOT NULL,
-	muscle_id INT NOT NULL
+        'lats')
 );
 
 CREATE TABLE if not exists exercises_logs(
@@ -276,19 +264,6 @@ ADD CONSTRAINT fk_player_exercise_log
 FOREIGN KEY (player_id) REFERENCES players(id_player)
 ON DELETE CASCADE
 ON UPDATE CASCADE;
-
-ALTER TABLE exercises_muscles
-ADD CONSTRAINT fk_exercise_muscle
-FOREIGN KEY (exercise_id) REFERENCES exercises(id_exercise)
-ON DELETE CASCADE
-ON UPDATE CASCADE;
-
-ALTER TABLE exercises_muscles
-ADD CONSTRAINT fk_muscle_exercise
-FOREIGN KEY (muscle_id) REFERENCES muscles(id_muscle)
-ON DELETE CASCADE
-ON UPDATE CASCADE;
-
 
 ALTER TABLE exercises_workouts
 ADD CONSTRAINT fk_exercise_workout
