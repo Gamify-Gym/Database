@@ -11,23 +11,13 @@ CREATE TABLE if not exists foods(
     carbohydrates DOUBLE NOT NULL,
     fats DOUBLE NOT NULL,
     fibers DOUBLE NOT NULL,
-	sodium DOUBLE NOT NULL
-);
-
-CREATE TABLE if not exists sugars(
-	id_sugar INT AUTO_INCREMENT PRIMARY KEY,
-    total_sugar DOUBLE NOT NULL,
+	sodium DOUBLE NOT NULL,
+	total_sugar DOUBLE NOT NULL,
     added_sugar DOUBLE NOT NULL,
-    food_id INT NOT NULL
-);
-
-CREATE TABLE if not exists fats(
-	id_fat INT AUTO_INCREMENT PRIMARY KEY,
-    trans_fats DOUBLE NOT NULL,
+	trans_fats DOUBLE NOT NULL,
     monounsaturated_fats DOUBLE NOT NULL,
     polyunsaturated_fats DOUBLE NOT NULL,
-    satured_fats DOUBLE NOT NULL,
-    food_id INT NOT NULL
+    satured_fats DOUBLE NOT NULL
 );
 
 CREATE TABLE if not exists foods_logs(
@@ -245,12 +235,6 @@ FOREIGN KEY (meal_id) REFERENCES meals(id_meal)
 ON DELETE CASCADE
 ON UPDATE CASCADE;
 
-ALTER TABLE fats
-ADD CONSTRAINT fk_food_fat
-FOREIGN KEY (food_id) REFERENCES foods(id_food)
-ON DELETE CASCADE
-ON UPDATE CASCADE;
-
 ALTER TABLE foods_logs
 ADD CONSTRAINT fk_food_food_log
 FOREIGN KEY (food_id) REFERENCES foods(id_food)
@@ -345,12 +329,6 @@ ON UPDATE CASCADE;
 ALTER TABLE personal_trainers
 ADD CONSTRAINT fk_user_personal_trainer
 FOREIGN KEY (user_id) REFERENCES users(id_user)
-ON DELETE CASCADE
-ON UPDATE CASCADE;
-
-ALTER TABLE sugars
-ADD CONSTRAINT fk_food_sugar
-FOREIGN KEY (food_id) REFERENCES foods(id_food)
 ON DELETE CASCADE
 ON UPDATE CASCADE;
 
